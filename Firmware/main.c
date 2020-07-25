@@ -135,10 +135,10 @@ void GPIO_Configuration(void)
 
   RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC, ENABLE); 						 
   /**
-  *  The coil is on GPIOA Pin 0 and GPIO Pin 5
+  *  The coil is on GPIOA Pin 1 and GPIO Pin 5
   *  The activate button is on GPIOA Pin 7, and on-board LED on GPIOC Pin 13
   */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_5;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_5;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 
   GPIO_Init(GPIOA, &GPIO_InitStructure);
@@ -373,14 +373,14 @@ static void invert_coil_pole(void)
 {
 	if (f2f_pole == 1)
 	{
-		GPIO_SetBits(GPIOA , GPIO_Pin_0);
+		GPIO_SetBits(GPIOA , GPIO_Pin_1);
 		GPIO_ResetBits(GPIOA , GPIO_Pin_5);
 		f2f_pole = 0;
 	}
   else
 	{
 		GPIO_SetBits(GPIOA , GPIO_Pin_5);
-		GPIO_ResetBits(GPIOA , GPIO_Pin_0);
+		GPIO_ResetBits(GPIOA , GPIO_Pin_1);
 		f2f_pole = 1;
 	}
 }
@@ -520,10 +520,12 @@ void play_card(card *c)
 {
 	int i;
 	
+	GPIO_SetBits(GPIOA , GPIO_Pin_0);
+	
   // let user know playback has begun by turning on LED
 	GPIO_SetBits(GPIOA , GPIO_Pin_13);
 	GPIO_ResetBits(GPIOA , GPIO_Pin_5);
-	GPIO_ResetBits(GPIOA , GPIO_Pin_0);
+	GPIO_ResetBits(GPIOA , GPIO_Pin_1);
 
   f2f_pole = 0;
 
@@ -533,6 +535,8 @@ void play_card(card *c)
   // turn off LED and make sure coils are off
   GPIO_ResetBits(GPIOA , GPIO_Pin_13);
 	GPIO_ResetBits(GPIOA , GPIO_Pin_5);
+	GPIO_ResetBits(GPIOA , GPIO_Pin_1);
+	
 	GPIO_ResetBits(GPIOA , GPIO_Pin_0);
 }
 
