@@ -22,7 +22,9 @@ The C8T6 is a cheap yet powerful STM32 unit, and a minimal system module only co
 
 This project comes with absolutly no warrenty, and I'm not responsible for any possible consiquence of using this project in real life.
 
-## Lisence
+## License
+
+This project is under the License of GPL V 3.0.
 
 ## Hardware design
 
