@@ -1,6 +1,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef __GNUC__
   /* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
@@ -78,11 +80,20 @@ int main(void)
 	int i, j;
 	char *track;
 	
+	c=malloc(sizeof(card));
+	
+	(c)->tracks[0]=(char *)malloc(70);
+	(c)->tracks[1]=(char *)malloc(70);
+	(c)->tracks[2]=(char *)malloc(70);
+	
 	//Defaultly load the test card
-	*c=test_card;
+	//*c=test_card;
+	memcpy(c->tracks[0],"%B4444444444444444^ABE/LINCOLN^291110100000931?",sizeof("%B4444444444444444^ABE/LINCOLN^291110100000931?"));
+	memcpy(c->tracks[1],";4444444444444444=29111010000093100000?",sizeof(";4444444444444444=29111010000093100000?"));
 	
 	//Initialize GPIO, USART, and interruptions
 	GPIO_Configuration();
+	GPIO_SetBits(GPIOC , GPIO_Pin_13);
 	USART_Configuration();
 	NVIC_Configuration();
 	EXTI_Configuration();
@@ -99,8 +110,8 @@ int main(void)
 	{
 		for(i=0;i<3;i++)
 		{
-			printf("Please enter the %d track, ending with '#'\r\n",i);
-			track = c->tracks[i];
+			printf("Please enter the %d track, ending with '#':\r\n",i);
+			track = (c)->tracks[i];
 			j=0;
 			while(1)
 			{
@@ -113,7 +124,7 @@ int main(void)
 				else
 				{
 					track[j]='\0';
-					continue;
+					break;
 				}
 			}
 		}
@@ -166,7 +177,7 @@ void EXTI_Configuration(void)
 {
   EXTI_InitTypeDef EXTI_InitStructure;
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE); 
-  GPIO_EXTILineConfig(GPIO_PortSourceGPIOG, GPIO_PinSource7);
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource7);
   EXTI_ClearITPendingBit(EXTI_Line7);
 
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
@@ -189,8 +200,8 @@ void NVIC_Configuration(void)
   NVIC_InitTypeDef NVIC_InitStructure; 
 
   NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;	  
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;   
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;	      
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;   
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;	      
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 }
@@ -209,7 +220,7 @@ void EXTI9_5_IRQHandler(void)
 	{
 		delay_ms(5);
 	  play_card(c);
-		blink(3);
+		blink(2);
 		EXTI_ClearITPendingBit(EXTI_Line7);
 	}
 }
@@ -353,9 +364,9 @@ void blink(int times)
 {
   int i;
   for (i = 0; i < times; i++) {
-    GPIO_SetBits(GPIOA , GPIO_Pin_13);
+		GPIO_ResetBits(GPIOC , GPIO_Pin_13);
     delay_ms(200);
-    GPIO_ResetBits(GPIOA , GPIO_Pin_13);
+    GPIO_SetBits(GPIOC , GPIO_Pin_13);
     delay_ms(200);
    } 
 }
@@ -523,7 +534,7 @@ void play_card(card *c)
 	GPIO_SetBits(GPIOA , GPIO_Pin_0);
 	
   // let user know playback has begun by turning on LED
-	GPIO_SetBits(GPIOA , GPIO_Pin_13);
+	GPIO_ResetBits(GPIOA , GPIO_Pin_13);
 	GPIO_ResetBits(GPIOA , GPIO_Pin_5);
 	GPIO_ResetBits(GPIOA , GPIO_Pin_1);
 
@@ -532,8 +543,9 @@ void play_card(card *c)
   for (i = 0; i < 3; i++)
     play_track(c, i);
 
+	delay_ms(200);
   // turn off LED and make sure coils are off
-  GPIO_ResetBits(GPIOA , GPIO_Pin_13);
+  GPIO_SetBits(GPIOA , GPIO_Pin_13);
 	GPIO_ResetBits(GPIOA , GPIO_Pin_5);
 	GPIO_ResetBits(GPIOA , GPIO_Pin_1);
 	

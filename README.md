@@ -51,3 +51,13 @@ This is only a prototype of STM32 based magspoof. There're a few things I'm plan
 - Add a portable builtin power source.
 
 Feel free to open an issue to discuss any interesting features you'd like to add.
+
+## Update log
+
+- 7/26/2020: General bug fix including:
+  - Fix the bug that the LED keeps on without blinking
+  - Fix the bug of "Hard Fault" caused by null pointer
+  - Fix the bug that USART can't receive message due to configuration error of NVIC
+  - Fix the bug that external interruption can't be triggered due to misconfiguration of interruption source
+  - Fix the bug of enternal loop
+  - Code cleanup
