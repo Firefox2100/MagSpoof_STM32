@@ -20,7 +20,7 @@ The C8T6 is a cheap yet powerful STM32 unit, and a minimal system module only co
 
 ## Disclaimer
 
-This project comes with absolutly no warrenty, and I'm not responsible for any possible consiquence of using this project in real life.
+This project comes with absolutly no warrenty, and I'm not responsible for any possible consequence of using this project in real life.
 
 ## License
 
@@ -38,9 +38,43 @@ To keep this design as simple as possible, I chose not to design any additional 
 
 And that's it. Literally a 10 minute hack. And if you want to use the serial port you'll need some connector, normally CH340 in my region, or any other devices, even like ESP8266.
 
+### Prototype
+
+The prototype, the one I've already built, is based on a simple wire-wrap board. All the components are acuqirable online at a total price of about 5$. I made use of what I have at hand, so I didn't use any special hardware.
+
+Here are the design pictures:
+
+![Front](Hardware/Prototype%20wire-wrap%20board/1.jpg)
+
+![Side](Hardware/Prototype%20wire-wrap%20board/2.jpg)
+
+Please pardon my horrible soldering. I was neveer good at it. The L293D driver and the 100uF capacitor is inside the design, between STM32 and the wire-wrap board. In my test the heat won't be an issue on L293D, so wrapping it in the coil is fine. The coil is wrapped for 70 times.
+
+### V 1.0
+
+I've started to design the circuit and PCB of a new design. It will include an ESP8266 and a battery pack. I'm currently having a bit of an issue on PCB design because it's a little bit too complicated for my capability, but eventually I'll finish it. In the mean time, feel free to contact me if you can help with the PCB design.
+
 ## Firmware design
 
 The program of the design is located in the ``Firmware`` folder of this repo. Due to copyright issue (and not wanting to deal with all sorts of licenses) I only uploaded the ``main.c`` file of a regular Keil project. You can use your own template to make it work. This code should be compatable with any MCU under the STM32F10x family, maybe even more.
+
+### Usage
+
+First make sure that you've built the same or similar functioning hardware platform to run this project. I will not stress on hardware building because there're multiple choices for each component, you can build it however you see fit.
+
+#### Use the code in a Keil project
+
+The most common way to develop code for a STM32 is to use Keil. If you already have a functioning environment and a working template you can skip this part. For those who don't, you need an authorized copy of Keil, because you'll need to mix up assembly and C, and without proper license Keil can't perform the linking procedure. Then go download the device pack of STM32 on their official site, set it up. The last thing you need is a template project of STM32F103C8T6, unless you want to costomize the startup process and know what you're doing. Pay special attention to the chip set because different STM32 processers has different startup process, address, etc.
+
+As mentioned above, I used stdperiph library to simplify the code. You can use what you like and port the code, but for stdperiph users, please enable ``misc.h``, ``EXTI.h``, ``USART.h``, ``GPIO.h``, ``RCC.h`` and other headfile you want.
+
+#### Code customization
+
+The code is quite easy and has comments. But basically, if you want to load more cards into the device, I've shown how it should be done in the code itself. Just remember to avoid modifying global variable in an interruption handler, it may have unintended consequences.
+
+#### Use the project after downloading
+
+After downloading, you may want to reset the board just in case. Then open a serial on PA9 and PA10, it will prompt to enter the data you want to spoof. When edit is done, simply pull the PA7 to GND will trigger the simulation. When simulation is done the LED will blink twice, when the board is reset it will blink 3 times.
 
 ## To-Do list
 
